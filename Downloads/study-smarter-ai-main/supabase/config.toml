@@ -1,0 +1,56 @@
+project_id = "fjllbahsezrivdnpelpa"
+
+[functions.fetch-canvas-assignments]
+verify_jwt = false
+
+[functions.generate-study-questions]
+verify_jwt = false
+
+[functions.fetch-canvas-files]
+verify_jwt = false
+
+[functions.transcribe-audio]
+verify_jwt = false
+
+[functions.generate-study-notes]
+verify_jwt = false
+
+[functions.fetch-canvas-schedule]
+verify_jwt = false
+
+[functions.fetch-canvas-modules]
+verify_jwt = false
+
+[functions.fetch-course-details]
+verify_jwt = false
+
+[functions.extract-exam-dates]
+verify_jwt = false
+
+[functions.scan-midterm-dates]
+verify_jwt = false
+
+[functions.generate-background]
+verify_jwt = false
+
+[functions.generate-study-schedule]
+verify_jwt = false
+
+[functions.generate-weekly-quiz]
+verify_jwt = false
+
+[functions.organize-class-notes]
+verify_jwt = false
+
+[functions.analyze-homework]
+verify_jwt = false
+
+[functions.parse-notes-pdf]
+verify_jwt = false
+
+[functions.match-study-materials]
+verify_jwt = false
+
+[functions.summarize-notes]
+verify_jwt = false
+
