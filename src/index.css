@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+/* ─── Black Hole Color Scheme ─────────────────────────── */
+:root {
+  --black-hole-void: #000000;
+  --black-hole-deep: #0a0a0a;
+  --black-hole-dark: #141414;
+  --black-hole-border: #1f1f1f;
+  --event-horizon: #2a2a2a;
+  --accretion-orange: #ff6b35;
+  --accretion-amber: #ff8c42;
+  --accretion-gold: #ffa552;
+  --photon-white: #ffffff;
+  --photon-dim: #e0e0e0;
+}
+
+/* ─── Custom Fonts ─────────────────────────────────────── */
+* {
+  font-family: 'Rajdhani', system-ui, -apple-system, sans-serif;
+}
+
+/* ─── Custom Scrollbar ─────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ff6b35; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #ff8c42; }
+
+html { scroll-behavior: smooth; }
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Rajdhani', system-ui, -apple-system, sans-serif;
+}
+
+/* ─── Seamless Infinite Marquee ────────────────────────── */
+/*
+  The trick: two identical sets of items side by side.
+  We translate from 0 → -50% so the second copy is always ready.
+  overflow: hidden on the parent clips everything outside.
+*/
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes ticker-scroll-slow {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Stock ticker — slow and smooth (90s for one full loop) */
+.ticker-track {
+  display: flex;
+  width: max-content;          /* must be wider than the viewport */
+  animation: ticker-scroll 90s linear infinite;
+  will-change: transform;
+}
+
+/* News ticker — very slow and readable (150s for one full loop) */
+.ticker-track-slow {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll-slow 150s linear infinite;
+  will-change: transform;
+}
+
+/* Pause on hover — both rows */
+.ticker-pause:hover .ticker-track-slow {
+  animation-play-state: paused;
+}
+
+.ticker-row:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+/* ─── Pulse Glow ───────────────────────────────────────── */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ─── Ticker Row Base ──────────────────────────────────── */
+.ticker-row {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+/* fade edges */
+.ticker-row::before,
+.ticker-row::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 48px;
+  z-index: 10;
+  pointer-events: none;
+}
+.ticker-row::before {
+  left: 0;
+  background: linear-gradient(to right, #000000, transparent);
+}
+.ticker-row::after {
+  right: 0;
+  background: linear-gradient(to left, #000000, transparent);
+}
+
+/* ─── Landing Page Scroll Animations ───────────────────── */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(-5deg); }
+}
+
+@keyframes float-fast {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-40px) scale(1.05); }
+}
+
+.parallax-slow {
+  animation: float-slow 20s ease-in-out infinite;
+}
+
+.parallax-medium {
+  animation: float-medium 15s ease-in-out infinite;
+}
+
+.parallax-fast {
+  animation: float-fast 10s ease-in-out infinite;
+}
