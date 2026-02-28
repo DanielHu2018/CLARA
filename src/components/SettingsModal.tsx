@@ -44,7 +44,7 @@ const DEFAULT_API_KEYS: ApiKey[] = [
     icon: Globe, docsUrl: 'https://finnhub.io/dashboard',
   },
   {
-    id: 'news', label: 'NewsAPI', envVar: 'VITE_NEWSAPI_KEY',
+    id: 'news', label: 'NewsAPI', envVar: 'VITE_NEWS_API_KEY',
     value: localStorage.getItem('CLARA_news_key') || '',
     hint: 'Free tier: 100 requests/day. News feed and sentiment.',
     icon: Globe, docsUrl: 'https://newsapi.org/register',
