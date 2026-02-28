@@ -581,3 +581,20 @@ class BreachHistory(BaseModel):
     total_breaches: int
     breaches: List[BreachEvent]
     date_range: Dict[str, date]
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CHAT
+# ══════════════════════════════════════════════════════════════════════════════
+
+class ChatMessageRequest(BaseModel):
+    message: str = Field(..., min_length=1, max_length=4000)
+    conversation_id: Optional[str] = None
+    context: Optional[Dict[str, Any]] = None
+
+
+class ChatMessageResponse(BaseModel):
+    reply: str
+    conversation_id: str
+    provider: str
+    fallback_used: bool = False

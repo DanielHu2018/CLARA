@@ -28,6 +28,7 @@ from routers import (
     audit,
     system_health,
     ten_k_risks,
+    chat,
 )
 from services.alert_agent import alert_agent
 from config import settings
@@ -89,6 +90,7 @@ app.include_router(simulation.router,    prefix="/api/simulation",  tags=["Monte
 app.include_router(audit.router,         prefix="/api/audit",       tags=["Audit Trail"])
 app.include_router(system_health.router, prefix="/api/health",      tags=["System Health"])
 app.include_router(ten_k_risks.router,   prefix="/api/10k",         tags=["10-K Analysis"])
+app.include_router(chat.router,          prefix="/api/chat",        tags=["Chat"])
 
 
 # ── Root ───────────────────────────────────────────────────────────────────────

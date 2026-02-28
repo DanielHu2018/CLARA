@@ -4,6 +4,7 @@
  */
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/utils/cn';
+import { sendChatMessage } from '@/services/chatService';
 import {
   MessageCircle, X, Send, Loader2, Bot, User,
   Brain, Zap, RefreshCw, ChevronRight, Sparkles,
@@ -138,6 +139,7 @@ export function ChatBot({ portfolioContext, session: _session }: ChatBotProps) {
   const [input, setInput]     = useState('');
   const [loading, setLoading] = useState(false);
   const [unread, setUnread]   = useState(0);
+  const conversationIdRef = useRef<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -167,12 +169,27 @@ export function ChatBot({ portfolioContext, session: _session }: ChatBotProps) {
     setMessages(prev => [...prev, userMsg]);
     setLoading(true);
 
-    await new Promise(r => setTimeout(r, 500 + Math.random() * 700));
+    let reply = '';
+    const apiResult = await sendChatMessage({
+      message: content,
+      conversation_id: conversationIdRef.current,
+      context: portfolioContext ? { portfolio: portfolioContext } : undefined,
+    });
+
+    if (apiResult?.conversation_id) {
+      conversationIdRef.current = apiResult.conversation_id;
+    }
+
+    if (apiResult?.reply?.trim()) {
+      reply = apiResult.reply.trim();
+    } else {
+      reply = generateResponse(content, portfolioContext);
+    }
 
     const aiMsg: Message = {
       id: `a-${Date.now()}`,
       role: 'assistant',
-      content: generateResponse(content, portfolioContext),
+      content: reply,
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, aiMsg]);
@@ -223,7 +240,10 @@ export function ChatBot({ portfolioContext, session: _session }: ChatBotProps) {
             </div>
             <div className="flex items-center gap-1">
               <button
-                onClick={() => setMessages(msgs => [msgs[0]])}
+                onClick={() => {
+                  conversationIdRef.current = null;
+                  setMessages(msgs => [msgs[0]]);
+                }}
                 className="rounded-lg p-1.5 text-zinc-600 hover:bg-black hover:text-zinc-400 transition-colors"
                 title="Clear chat"
               >
