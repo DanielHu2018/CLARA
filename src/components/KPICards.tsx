@@ -91,15 +91,15 @@ export function KPICards() {
             )}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] text-zinc-500 uppercase tracking-wider">{kpi.label}</span>
-              <div className={cn('flex h-6 w-6 items-center justify-center rounded-md', style.icon)}>
-                <kpi.icon size={13} />
+              <span className="text-xs text-zinc-300 uppercase tracking-wider font-medium">{kpi.label}</span>
+              <div className={cn('flex h-7 w-7 items-center justify-center rounded-md', style.icon)}>
+                <kpi.icon size={15} />
               </div>
             </div>
-            <div className={cn('text-xl font-bold font-mono', style.value)}>{kpi.value}</div>
+            <div className={cn('text-2xl font-bold font-mono', style.value)}>{kpi.value}</div>
             <div className="mt-1 flex items-center justify-between">
-              <span className={cn('text-[10px] font-semibold', style.badge)}>{kpi.change}</span>
-              <span className="text-[9px] text-zinc-600">{kpi.detail}</span>
+              <span className={cn('text-xs font-semibold', style.badge)}>{kpi.change}</span>
+              <span className="text-xs text-zinc-400">{kpi.detail}</span>
             </div>
           </div>
         );

@@ -179,8 +179,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               <Settings size={16} className="text-zinc-300" />
             </div>
             <div>
-              <div className="text-sm font-bold text-white">CLARA System Settings</div>
-              <div className="text-[10px] text-zinc-500">API keys, risk limits, display preferences, model configuration</div>
+              <div className="text-base font-bold text-white">CLARA System Settings</div>
+              <div className="text-xs text-zinc-400">API keys, risk limits, display preferences, model configuration</div>
             </div>
           </div>
           <button onClick={onClose} className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-800 hover:text-white transition-colors">
@@ -196,7 +196,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                 key={t.key}
                 onClick={() => setActiveTab(t.key)}
                 className={cn(
-                  'w-full flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-medium transition-all text-left',
+                  'w-full flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all text-left',
                   activeTab === t.key
                     ? 'bg-orange-950/40 border border-orange-800/40 text-orange-300'
                     : 'text-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-300'
@@ -216,7 +216,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               <div className="space-y-4">
                 <div className="rounded-xl border border-zinc-900/40 bg-zinc-950/15 px-4 py-3 flex items-start gap-3">
                   <Key size={13} className="text-zinc-400 mt-0.5 shrink-0" />
-                  <div className="text-[11px] text-zinc-300 leading-relaxed">
+                  <div className="text-xs text-zinc-300 leading-relaxed">
                     Keys saved here are stored in your browser's <strong>localStorage</strong> and used at runtime.
                     For production, add them to your <code className="bg-zinc-800 rounded px-1">.env</code> file instead.
                   </div>
@@ -227,8 +227,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <key.icon size={13} className="text-zinc-500" />
-                          <span className="text-xs font-bold text-white">{key.label}</span>
-                          <code className="text-[10px] text-purple-400 bg-zinc-800 rounded px-1.5 py-0.5">{key.envVar}</code>
+                          <span className="text-sm font-bold text-white">{key.label}</span>
+                          <code className="text-xs text-purple-400 bg-zinc-800 rounded px-1.5 py-0.5">{key.envVar}</code>
                         </div>
                         {key.value && <CheckCircle size={13} className="text-orange-400" />}
                       </div>
@@ -239,7 +239,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                             value={key.value}
                             onChange={e => updateApiKey(key.id, e.target.value)}
                             placeholder={`Enter ${key.label} key…`}
-                            className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 pr-9 py-2 text-xs font-mono text-zinc-200 placeholder-zinc-600 focus:border-orange-600 focus:outline-none transition-colors"
+                            className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 pr-9 py-2 text-sm font-mono text-zinc-200 placeholder-zinc-600 focus:border-orange-600 focus:outline-none transition-colors"
                           />
                           <button
                             onClick={() => toggleReveal(key.id)}
@@ -250,8 +250,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                         </div>
                       </div>
                       <div className="flex items-center justify-between mt-2">
-                        <p className="text-[10px] text-zinc-600">{key.hint}</p>
-                        <a href={key.docsUrl} target="_blank" rel="noreferrer" className="text-[10px] text-orange-600 hover:text-orange-400 transition-colors">
+                        <p className="text-xs text-zinc-500">{key.hint}</p>
+                        <a href={key.docsUrl} target="_blank" rel="noreferrer" className="text-xs text-orange-500 hover:text-orange-400 transition-colors">
                           Get key →
                         </a>
                       </div>
@@ -264,7 +264,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
             {/* ── RISK LIMITS ── */}
             {activeTab === 'thresholds' && (
               <div className="space-y-4">
-                <p className="text-[11px] text-zinc-500 leading-relaxed">
+                <p className="text-xs text-zinc-400 leading-relaxed">
                   Configure breach thresholds. When simulated risk metrics exceed these limits, CLARA fires alerts
                   and triggers escalation workflows.
                 </p>
@@ -276,8 +276,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                 ].map(lim => (
                   <div key={lim.key} className="rounded-xl border border-zinc-800 bg-black/50 p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <label className="text-xs font-bold text-white">{lim.label}</label>
-                      <span className="text-sm font-mono font-bold text-amber-400">
+                      <label className="text-sm font-bold text-white">{lim.label}</label>
+                      <span className="text-base font-mono font-bold text-amber-400">
                         {lim.unit === '$M' ? `$${limits[lim.key as keyof typeof limits]}M` : `${limits[lim.key as keyof typeof limits]}%`}
                       </span>
                     </div>
@@ -288,7 +288,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                       onChange={e => setLimits(prev => ({ ...prev, [lim.key]: e.target.value }))}
                       className="w-full accent-orange-500"
                     />
-                    <div className="flex justify-between text-[10px] text-zinc-600 mt-1">
+                    <div className="flex justify-between text-xs text-zinc-500 mt-1">
                       <span>{lim.unit === '$M' ? `$${lim.min}M` : `${lim.min}%`}</span>
                       <span>{lim.unit === '$M' ? `$${lim.max}M` : `${lim.max}%`}</span>
                     </div>
@@ -296,7 +296,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                 ))}
                 <div className="flex items-start gap-2 rounded-xl border border-amber-900/30 bg-amber-950/10 p-3">
                   <AlertTriangle size={13} className="text-amber-400 mt-0.5 shrink-0" />
-                  <p className="text-[11px] text-amber-400/80 leading-relaxed">
+                  <p className="text-xs text-amber-400/90 leading-relaxed">
                     Limit changes take effect on the next cycle run. Historical breach records are not retroactively updated.
                   </p>
                 </div>
@@ -309,8 +309,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                 {/* MC Paths */}
                 <div className="rounded-xl border border-zinc-800 bg-black/50 p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-xs font-bold text-white">Monte Carlo Paths</label>
-                    <span className="text-sm font-mono font-bold text-orange-400">{Number(display.mcPaths).toLocaleString()}</span>
+                    <label className="text-sm font-bold text-white">Monte Carlo Paths</label>
+                    <span className="text-base font-mono font-bold text-orange-400">{Number(display.mcPaths).toLocaleString()}</span>
                   </div>
                   <div className="flex gap-2">
                     {['10000','50000','100000','500000'].map(v => (
@@ -318,7 +318,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                         key={v}
                         onClick={() => setDisplay(p => ({ ...p, mcPaths: v }))}
                         className={cn(
-                          'flex-1 rounded-lg border py-2 text-[11px] font-bold transition-all',
+                          'flex-1 rounded-lg border py-2 text-xs font-bold transition-all',
                           display.mcPaths === v
                             ? 'border-orange-600 bg-orange-950/30 text-orange-300'
                             : 'border-zinc-700 bg-zinc-800 text-zinc-500 hover:border-zinc-600'
@@ -333,8 +333,8 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                 {/* Refresh Rate */}
                 <div className="rounded-xl border border-zinc-800 bg-black/50 p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-xs font-bold text-white">Price Refresh Rate</label>
-                    <span className="text-sm font-mono font-bold text-orange-400">{display.refreshRate}s</span>
+                    <label className="text-sm font-bold text-white">Price Refresh Rate</label>
+                    <span className="text-base font-mono font-bold text-orange-400">{display.refreshRate}s</span>
                   </div>
                   <div className="flex gap-2">
                     {['15','30','60','300'].map(v => (
@@ -342,7 +342,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                         key={v}
                         onClick={() => setDisplay(p => ({ ...p, refreshRate: v }))}
                         className={cn(
-                          'flex-1 rounded-lg border py-2 text-[11px] font-bold transition-all',
+                          'flex-1 rounded-lg border py-2 text-xs font-bold transition-all',
                           display.refreshRate === v
                             ? 'border-orange-600 bg-orange-950/30 text-orange-300'
                             : 'border-zinc-700 bg-zinc-800 text-zinc-500 hover:border-zinc-600'

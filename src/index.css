@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+@theme {
+  /* Increased font sizes for better readability */
+  --font-size-xs: 0.8125rem;     /* 13px - was 12px */
+  --font-size-sm: 0.9375rem;     /* 15px - was 14px */
+  --font-size-base: 1.0625rem;   /* 17px - was 16px */
+  --font-size-lg: 1.1875rem;     /* 19px - was 18px */
+  --font-size-xl: 1.3125rem;     /* 21px - was 20px */
+  --font-size-2xl: 1.5625rem;    /* 25px - was 24px */
+  --font-size-3xl: 1.9375rem;    /* 31px - was 30px */
+  
+  /* Enhanced text colors for better contrast against black */
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #f5f5f5;
+  --color-zinc-200: #e8e8e8;
+  --color-zinc-300: #d6d6d6;
+  --color-zinc-400: #b0b0b0;
+  --color-zinc-500: #909090;
+  --color-zinc-600: #707070;
+}
+
 /* ─── Black Hole Color Scheme ─────────────────────────── */
 :root {
   --black-hole-void: #000000;
@@ -11,7 +31,8 @@
   --accretion-amber: #ff8c42;
   --accretion-gold: #ffa552;
   --photon-white: #ffffff;
-  --photon-dim: #e0e0e0;
+  --photon-dim: #f0f0f0;
+  --photon-bright: #fafafa;
 }
 
 /* ─── Custom Fonts ─────────────────────────────────────── */
@@ -25,11 +46,26 @@
 ::-webkit-scrollbar-thumb { background: #ff6b35; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #ff8c42; }
 
-html { scroll-behavior: smooth; }
+html { 
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: 'Rajdhani', system-ui, -apple-system, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+/* Enhanced text contrast and readability */
+h1, h2, h3, h4, h5, h6 {
+  color: #fafafa;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+p, span, div {
+  color: #f0f0f0;
 }
 
 /* ─── Seamless Infinite Marquee ────────────────────────── */

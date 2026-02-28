@@ -49,10 +49,10 @@ function AlertsDrawer({ onClose, onGoAlerts }: { onClose: () => void; onGoAlerts
       <div className="h-1 w-full bg-gradient-to-r from-orange-600 via-amber-500 to-zinc-600" />
       <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-900">
         <div className="flex items-center gap-2">
-          <Bell size={14} className="text-white" />
-          <span className="text-sm font-bold text-white">Active Alerts</span>
+          <Bell size={16} className="text-white" />
+          <span className="text-base font-bold text-white">Active Alerts</span>
           {unacked > 0 && (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-[9px] font-black text-white">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-xs font-black text-white">
               {unacked}
             </span>
           )}
@@ -60,12 +60,12 @@ function AlertsDrawer({ onClose, onGoAlerts }: { onClose: () => void; onGoAlerts
         <div className="flex items-center gap-2">
           <button
             onClick={onGoAlerts}
-            className="text-[10px] text-orange-400 hover:text-orange-300 transition-colors font-semibold"
+            className="text-xs text-orange-400 hover:text-orange-300 transition-colors font-semibold"
           >
             View All →
           </button>
-          <button onClick={onClose} className="rounded-lg p-1 text-zinc-500 hover:text-white hover:bg-black transition-colors">
-            <X size={13} />
+          <button onClick={onClose} className="rounded-lg p-1 text-zinc-400 hover:text-white hover:bg-black transition-colors">
+            <X size={15} />
           </button>
         </div>
       </div>
@@ -78,8 +78,8 @@ function AlertsDrawer({ onClose, onGoAlerts }: { onClose: () => void; onGoAlerts
           { label: 'Info',     count: HEADER_ALERTS.filter(a => a.sev === 'info').length,     cls: 'text-zinc-400' },
         ].map(s => (
           <div key={s.label} className="rounded-lg border border-zinc-800 bg-black/50 px-3 py-2 text-center">
-            <div className="text-[10px] text-zinc-500">{s.label}</div>
-            <div className={cn('text-xl font-bold font-mono', s.cls)}>{s.count}</div>
+            <div className="text-xs text-zinc-300">{s.label}</div>
+            <div className={cn('text-2xl font-bold font-mono', s.cls)}>{s.count}</div>
           </div>
         ))}
       </div>
@@ -92,23 +92,23 @@ function AlertsDrawer({ onClose, onGoAlerts }: { onClose: () => void; onGoAlerts
           const isAcked = acked.has(alert.id);
           return (
             <div key={alert.id} className={cn('flex items-start gap-3 px-4 py-3 transition-all', isAcked && 'opacity-40')}>
-              <Icon size={14} className={cn('mt-0.5 shrink-0', cfg.iconCls)} />
+              <Icon size={16} className={cn('mt-0.5 shrink-0', cfg.iconCls)} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className={cn('text-[9px] font-bold uppercase rounded-full px-1.5 py-0.5', cfg.badge)}>
+                  <span className={cn('text-[10px] font-bold uppercase rounded-full px-2 py-0.5', cfg.badge)}>
                     {alert.sev}
                   </span>
-                  <span className="text-[10px] text-zinc-500 font-mono">{alert.time}</span>
+                  <span className="text-xs text-zinc-400 font-mono">{alert.time}</span>
                 </div>
-                <div className="text-xs font-semibold text-white leading-tight">{alert.title}</div>
-                <div className="text-[10px] text-zinc-500 mt-0.5 leading-relaxed">{alert.detail}</div>
+                <div className="text-sm font-semibold text-white leading-tight">{alert.title}</div>
+                <div className="text-xs text-zinc-300 mt-0.5 leading-relaxed">{alert.detail}</div>
               </div>
               {!isAcked && (
                 <button
                   onClick={() => setAcked(prev => new Set([...prev, alert.id]))}
-                  className="shrink-0 rounded-lg border border-zinc-700 hover:border-orange-700 bg-black hover:bg-orange-950/30 px-2 py-1 text-[9px] text-zinc-400 hover:text-orange-300 transition-all flex items-center gap-1"
+                  className="shrink-0 rounded-lg border border-zinc-700 hover:border-orange-700 bg-black hover:bg-orange-950/30 px-2.5 py-1.5 text-[10px] text-zinc-300 hover:text-orange-300 transition-all flex items-center gap-1"
                 >
-                  <CheckCircle size={9} /> ACK
+                  <CheckCircle size={10} /> ACK
                 </button>
               )}
             </div>
@@ -117,12 +117,12 @@ function AlertsDrawer({ onClose, onGoAlerts }: { onClose: () => void; onGoAlerts
       </div>
 
       <div className="px-4 py-3 border-t border-zinc-900 flex items-center justify-between">
-        <span className="text-[10px] text-zinc-600">
+        <span className="text-xs text-zinc-400">
           {portfolioImpact.filter(p => p.breached).length} limit breaches · {liveEvents.length} events monitored
         </span>
         <button
           onClick={() => setAcked(new Set(HEADER_ALERTS.map(a => a.id)))}
-          className="text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors"
+          className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
         >
           Acknowledge All
         </button>

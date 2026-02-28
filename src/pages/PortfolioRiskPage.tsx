@@ -684,6 +684,20 @@ export function PortfolioRiskPage({ userId, userName: _userName }: { userId: str
     prevSymbolsRef.current.add(data.symbol);
   }, [activePortfolioId, addHolding, fetchQuote]);
 
+  const handleAddRecommendation = useCallback((rec: ReturnType<typeof getRecommendations>[0]) => {
+    if (!activePortfolioId) return;
+    // Add with 10 shares by default, using current price as cost basis
+    const defaultShares = 10;
+    handleAddHolding({
+      symbol: rec.symbol,
+      shares: defaultShares,
+      avgCost: rec.currentPrice,
+      note: `Added from CLARA recommendations - ${rec.rating}`,
+    });
+    // Switch to holdings view to show the newly added position
+    setActiveView('holdings');
+  }, [activePortfolioId, handleAddHolding]);
+
   const liveHoldings = activePortfolio ? computeLiveHoldings(activePortfolio.holdings, getQuote) : [];
   const stats = computeStats(liveHoldings);
 
@@ -1281,7 +1295,7 @@ export function PortfolioRiskPage({ userId, userName: _userName }: { userId: str
                   <div className="flex gap-1.5">
                     <span className="text-[9px] rounded-md bg-zinc-800 px-2 py-0.5 text-zinc-500 border border-zinc-700">{rec.sector}</span>
                   </div>
-                  <button onClick={() => setActiveView('holdings')}
+                  <button onClick={() => handleAddRecommendation(rec)}
                     className="flex items-center gap-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-orange-700 px-3 py-1.5 text-[10px] font-semibold text-zinc-300 hover:text-orange-300 transition-all">
                     <ShoppingCart size={10} /> Add to Portfolio
                   </button>
