@@ -47,14 +47,14 @@ class Settings(BaseSettings):
     WATSONX_MODEL_ID: str = "ibm/granite-13b-instruct-v2"
 
     # ── IBM watsonx Orchestrate (Chat Agent) ───────────────────────────────
-    WATSONX_ORCH_URL: Optional[str] = 
-    WATSONX_ORCH_API_KEY: Optional[str] = 
-    WATSONX_ORCH_AGENT_ID: Optional[str] = None
+    WATSONX_ORCH_URL: Optional[str] = "your_orchestrate_base_url_here"
+    WATSONX_ORCH_API_KEY: Optional[str] = "your_orchestrate_api_key_here"
+    WATSONX_ORCH_AGENT_ID: Optional[str] = "your_orchestrate_agent_id_here"
     WATSONX_ORCH_CHAT_PATH: str = "/v1/chat/completions"
     WATSONX_ORCH_TIMEOUT_SECONDS: int = 20
 
     # ── Google Gemini ─────────────────────────────────────────────────────────
-    GEMINI_API_KEY: Optional[str] = None
+    GEMINI_API_KEY: Optional[str] = "your_gemini_key_here"
     GEMINI_MODEL: str = "gemini-2.0-flash"
     AI_PROVIDER: str = "auto"  # auto | gemini | watsonx
     AI_TIMEOUT_SECONDS: int = 20
