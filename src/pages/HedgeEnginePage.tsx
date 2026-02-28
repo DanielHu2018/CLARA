@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { hedgeRecommendations } from '@/data/mockData';
-import { Shield, CheckCircle, ArrowRight, DollarSign, Target, TrendingDown, Zap } from 'lucide-react';
+import { Shield, CheckCircle, ArrowRight, DollarSign, Target, TrendingDown, Zap, Loader2 } from 'lucide-react';
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from 'recharts';
+import { fetchHedgeAIAnalysis, type AIAnalysisResult } from '@/services/aiAnalysisService';
 
 const priorityStyles = {
   high: 'bg-red-500/15 text-red-400 border-red-900/30',
@@ -12,6 +13,8 @@ const priorityStyles = {
 
 export function HedgeEnginePage() {
   const [selectedHedge, setSelectedHedge] = useState(0);
+  const [aiAnalysis, setAiAnalysis] = useState<AIAnalysisResult | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
   const totalCost = '$2.84M';
   const avgEffectiveness = Math.round(hedgeRecommendations.reduce((s, h) => s + h.effectiveness, 0) / hedgeRecommendations.length);
 
@@ -22,6 +25,22 @@ export function HedgeEnginePage() {
   }));
 
   const selected = hedgeRecommendations[selectedHedge];
+
+  useEffect(() => {
+    let mounted = true;
+    const loadAnalysis = async () => {
+      setAiLoading(true);
+      const result = await fetchHedgeAIAnalysis();
+      if (mounted) {
+        setAiAnalysis(result);
+        setAiLoading(false);
+      }
+    };
+    loadAnalysis();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -53,6 +72,38 @@ export function HedgeEnginePage() {
             <div className={cn('text-xl font-bold font-mono', k.color)}>{k.value}</div>
           </div>
         ))}
+      </div>
+
+      <div className="rounded-xl border border-zinc-800 bg-black/50 p-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-white">AI Hedge Quality Check</h3>
+          {aiLoading && <Loader2 size={14} className="text-orange-400 animate-spin" />}
+        </div>
+        {aiAnalysis ? (
+          <div className="space-y-2.5">
+            <p className="text-xs text-zinc-300 leading-relaxed">{aiAnalysis.summary}</p>
+            <div className="flex items-center gap-2 text-[11px] text-zinc-500">
+              <span>Provider: <span className="text-zinc-300 uppercase">{aiAnalysis.provider}</span></span>
+              <span>•</span>
+              <span>Confidence: <span className={cn('font-mono', aiAnalysis.confidence >= 0.65 ? 'text-orange-400' : 'text-amber-400')}>{Math.round(aiAnalysis.confidence * 100)}%</span></span>
+              {aiAnalysis.needs_review && (
+                <>
+                  <span>•</span>
+                  <span className="text-amber-400">Needs analyst review</span>
+                </>
+              )}
+            </div>
+            {aiAnalysis.recommended_actions.length > 0 && (
+              <ul className="space-y-1 text-[11px] text-zinc-400">
+                {aiAnalysis.recommended_actions.slice(0, 2).map((item, idx) => (
+                  <li key={idx}>• {item}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : (
+          <p className="text-xs text-zinc-500">AI analysis unavailable right now. Check backend server and API key configuration.</p>
+        )}
       </div>
 
       {/* Effectiveness Chart */}

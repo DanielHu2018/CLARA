@@ -46,6 +46,12 @@ class Settings(BaseSettings):
     WATSONX_URL: str = "https://us-south.ml.cloud.ibm.com"
     WATSONX_MODEL_ID: str = "ibm/granite-13b-instruct-v2"
 
+    # ── Google Gemini ─────────────────────────────────────────────────────────
+    GEMINI_API_KEY: Optional[str] = None
+    GEMINI_MODEL: str = "gemini-2.0-flash"
+    AI_PROVIDER: str = "auto"  # auto | gemini | watsonx
+    AI_TIMEOUT_SECONDS: int = 20
+
     # ── IBM Watson Discovery ──────────────────────────────────────────────────
     WATSON_DISCOVERY_API_KEY: str = "your_watson_discovery_key_here"
     WATSON_DISCOVERY_URL: str = "https://api.us-south.discovery.watson.cloud.ibm.com"

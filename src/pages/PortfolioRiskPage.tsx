@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useAlertAgent } from '@/hooks/useAlertAgent';
 import { AlertAgentPanel } from '@/components/AlertAgentPanel';
+import { fetchPortfolioAIAnalysis, type AIAnalysisResult } from '@/services/aiAnalysisService';
 import {
   BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid,
@@ -639,6 +640,8 @@ export function PortfolioRiskPage({ userId, userName: _userName }: { userId: str
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [lastRefresh, setLastRefresh] = useState(new Date());
   const [showNewPortfolio, setShowNewPortfolio] = useState(false);
+  const [portfolioAI, setPortfolioAI] = useState<AIAnalysisResult | null>(null);
+  const [portfolioAILoading, setPortfolioAILoading] = useState(false);
   const prevSymbolsRef = useRef<Set<string>>(new Set());
 
   // Create first portfolio for new users
@@ -718,6 +721,58 @@ export function PortfolioRiskPage({ userId, userName: _userName }: { userId: str
     .map(h => ({ symbol: h.symbol, gainLoss: +h.gainLoss.toFixed(0), gainLossPct: +h.gainLossPct.toFixed(1), marketValue: +h.marketValue.toFixed(0) }));
 
   const recommendations = getRecommendations();
+
+  useEffect(() => {
+    if (!activePortfolio || liveHoldings.length === 0) {
+      setPortfolioAI(null);
+      return;
+    }
+
+    let mounted = true;
+    const timer = setTimeout(async () => {
+      setPortfolioAILoading(true);
+      const topHoldings = [...liveHoldings]
+        .sort((a, b) => b.marketValue - a.marketValue)
+        .slice(0, 5)
+        .map(h => ({
+          symbol: h.symbol,
+          sector: h.sector,
+          weight_pct: +((h.marketValue / Math.max(stats.totalValue, 1)) * 100).toFixed(2),
+          beta: h.beta,
+          gain_loss_pct: +h.gainLossPct.toFixed(2),
+        }));
+
+      const payload = {
+        portfolio_name: activePortfolio.name,
+        total_value: +stats.totalValue.toFixed(2),
+        total_cost: +stats.totalCost.toFixed(2),
+        total_gain_loss_pct: +stats.totalGainLossPct.toFixed(2),
+        day_gain_loss: +stats.totalDayGain.toFixed(2),
+        portfolio_beta: +stats.portfolioBeta.toFixed(3),
+        positions_count: liveHoldings.length,
+        top_holdings: topHoldings,
+      };
+
+      const result = await fetchPortfolioAIAnalysis(payload);
+      if (mounted) {
+        setPortfolioAI(result);
+        setPortfolioAILoading(false);
+      }
+    }, 650);
+
+    return () => {
+      mounted = false;
+      clearTimeout(timer);
+    };
+  }, [
+    activePortfolio,
+    liveHoldings,
+    stats.totalValue,
+    stats.totalCost,
+    stats.totalGainLossPct,
+    stats.totalDayGain,
+    stats.portfolioBeta,
+  ]);
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (
@@ -813,6 +868,38 @@ export function PortfolioRiskPage({ userId, userName: _userName }: { userId: str
             value={`${stats.totalGainLossPct >= 0 ? '+' : ''}${stats.totalGainLossPct.toFixed(2)}%`}
             sub={stats.totalGainLossPct > 20 ? 'Strong performer' : stats.totalGainLossPct > 0 ? 'Positive' : 'Review positions'}
             color={stats.totalGainLossPct >= 0 ? 'text-orange-400' : 'text-red-400'} icon={Target} />
+        </div>
+      )}
+
+      {activePortfolio && activePortfolio.holdings.length > 0 && activeView !== 'compare' && (
+        <div className="rounded-xl border border-zinc-800 bg-black/50 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold text-white">AI Portfolio Insight</h3>
+            {portfolioAILoading && <Loader2 size={14} className="text-orange-400 animate-spin" />}
+          </div>
+          {portfolioAI ? (
+            <div className="space-y-2">
+              <p className="text-xs text-zinc-300 leading-relaxed">{portfolioAI.summary}</p>
+              <div className="flex items-center gap-2 text-[11px] text-zinc-500">
+                <span>Provider: <span className="text-zinc-300 uppercase">{portfolioAI.provider}</span></span>
+                <span>•</span>
+                <span>Confidence: <span className={cn('font-mono', portfolioAI.confidence >= 0.65 ? 'text-orange-400' : 'text-amber-400')}>{Math.round(portfolioAI.confidence * 100)}%</span></span>
+                {portfolioAI.needs_review && (
+                  <>
+                    <span>•</span>
+                    <span className="text-amber-400">Needs analyst review</span>
+                  </>
+                )}
+              </div>
+              {portfolioAI.key_risks.length > 0 && (
+                <div className="text-[11px] text-zinc-400">
+                  Top risk: {portfolioAI.key_risks[0]}
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-xs text-zinc-500">AI insight unavailable. Ensure backend is running and API key is configured.</p>
+          )}
         </div>
       )}
 

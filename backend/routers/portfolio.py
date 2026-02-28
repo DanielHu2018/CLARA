@@ -22,7 +22,7 @@ import uuid
 import logging
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Body, HTTPException, Query
 
 from models.schemas import (
     AddPositionRequest, UpdatePositionRequest, PortfolioPosition,
@@ -35,6 +35,7 @@ from services.portfolio_engine import (
     compute_risk_contributors, run_monte_carlo, get_buy_recommendations
 )
 from services.alert_agent import alert_agent
+from services.ai_analysis_service import ai_analysis_service
 
 logger = logging.getLogger("CLARA.portfolio")
 router = APIRouter()
@@ -298,3 +299,45 @@ async def refresh_prices():
         "symbols":   symbols,
         "sources":   {sym: q.get("data_source", "unknown") for sym, q in quotes.items()},
     }
+
+
+@router.post("/analysis-summary", response_model=dict, summary="AI portfolio analysis summary")
+async def get_portfolio_analysis_summary(payload: Optional[Dict[str, Any]] = Body(default=None)):
+    """
+    AI-generated portfolio analysis with confidence gating.
+    Accepts optional client payload; if omitted, computes from in-memory portfolio.
+    """
+    if payload is None:
+        positions = _all_positions()
+        if not positions:
+            raise HTTPException(status_code=400, detail="No positions in portfolio")
+
+        symbols = list({p.symbol for p in positions})
+        quotes = await sd.get_quotes_batch(symbols)
+        total_value = sum(
+            p.shares * quotes.get(p.symbol, {}).get("price", p.avg_cost)
+            for p in positions
+        )
+        enriched = [enrich_position(p, quotes.get(p.symbol, {}), total_value) for p in positions]
+        summary = compute_portfolio_summary(enriched)
+
+        sorted_positions = sorted(enriched, key=lambda p: p.market_value, reverse=True)
+        top_holdings = [
+            {
+                "symbol": p.symbol,
+                "weight_pct": p.weight,
+                "beta": p.beta,
+                "gain_loss_pct": p.gain_loss_pct,
+            }
+            for p in sorted_positions[:5]
+        ]
+
+        payload = {
+            "total_value": summary.total_value,
+            "total_gain_loss_pct": summary.total_gain_loss_pct,
+            "portfolio_beta": summary.portfolio_beta,
+            "positions_count": summary.positions_count,
+            "top_holdings": top_holdings,
+        }
+
+    return await ai_analysis_service.analyze_portfolio(payload)
