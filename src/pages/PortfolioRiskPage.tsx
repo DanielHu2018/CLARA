@@ -12,6 +12,7 @@ import {
 import { useAlertAgent } from '@/hooks/useAlertAgent';
 import { AlertAgentPanel } from '@/components/AlertAgentPanel';
 import { fetchPortfolioAIAnalysis, type AIAnalysisResult } from '@/services/aiAnalysisService';
+import { usePortfolioContext } from '@/contexts/PortfolioContext';
 import {
   BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell,
   ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid,
@@ -632,6 +633,7 @@ export function PortfolioRiskPage({ userId, userName: _userName }: { userId: str
   } = useMultiPortfolio(userId);
 
   const alertAgent = useAlertAgent();
+  const { setSelectedHoldings } = usePortfolioContext();
   const [activeView, setActiveView] = useState<'holdings' | 'recommendations' | 'analytics' | 'alerts' | 'compare'>('holdings');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [loadingAll, setLoadingAll] = useState(false);
@@ -661,6 +663,19 @@ export function PortfolioRiskPage({ userId, userName: _userName }: { userId: str
       }
     });
   }, [activePortfolio, fetchQuote]);
+
+  // Update global portfolio context when active portfolio changes
+  useEffect(() => {
+    if (activePortfolio) {
+      setSelectedHoldings(activePortfolio.holdings.map(h => ({
+        symbol: h.symbol,
+        shares: h.shares,
+        avgCost: h.avgCost,
+      })));
+    } else {
+      setSelectedHoldings([]);
+    }
+  }, [activePortfolio, setSelectedHoldings]);
 
   // Pre-fetch recommendation stocks
   useEffect(() => {

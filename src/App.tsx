@@ -18,6 +18,7 @@ import { AuditTrailPage } from '@/pages/AuditTrailPage';
 import { SystemHealthPage } from '@/pages/SystemHealthPage';
 import { TenKAnalysisPage } from '@/pages/TenKAnalysisPage';
 import { getCurrentSession, signOut, type AuthSession } from '@/auth/authStore';
+import { PortfolioProvider } from '@/contexts/PortfolioContext';
 
 const tabComponents: Record<string, React.ComponentType<{ setActiveTab?: (tab: string) => void }>> = {
   'Live Markets':       LiveMarketsPage,
@@ -61,6 +62,7 @@ export function App() {
   const PageComponent = tabComponents[activeTab];
 
   return (
+    <PortfolioProvider>
     <div className="flex h-screen w-screen overflow-hidden bg-black text-white">
       {/* ── Sidebar (Desktop) ─────────────────────────────────────────────────────────── */}
       <div className="hidden lg:block">
@@ -142,5 +144,6 @@ export function App() {
       {/* ── AI Chat Side Panel ─────────────────────────────────────────────── */}
       <ChatBot session={session} />
     </div>
+    </PortfolioProvider>
   );
 }

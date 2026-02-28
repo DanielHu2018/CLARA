@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { hedgeRecommendations } from '@/data/mockData';
-import { Shield, CheckCircle, ArrowRight, DollarSign, Target, TrendingDown, Zap, Loader2 } from 'lucide-react';
+import { Shield, CheckCircle, ArrowRight, DollarSign, Target, TrendingDown, Zap, Loader2, Briefcase } from 'lucide-react';
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from 'recharts';
 import { fetchHedgeAIAnalysis, type AIAnalysisResult } from '@/services/aiAnalysisService';
+import { usePortfolioContext } from '@/contexts/PortfolioContext';
 
 const priorityStyles = {
   high: 'bg-red-500/15 text-red-400 border-red-900/30',
@@ -12,6 +13,8 @@ const priorityStyles = {
 };
 
 export function HedgeEnginePage() {
+  const { getSelectedSymbols, hasSelections } = usePortfolioContext();
+  const selectedSymbols = hasSelections ? getSelectedSymbols() : [];
   const [selectedHedge, setSelectedHedge] = useState(0);
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysisResult | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
@@ -46,8 +49,20 @@ export function HedgeEnginePage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Hedge Optimization Engine</h2>
-          <p className="text-xs text-zinc-500 mt-0.5">Convex optimization with cost, liquidity, tracking error, and mandate constraints</p>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            Hedge Optimization Engine
+            {hasSelections && (
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold text-orange-400 bg-orange-950/50 border border-orange-800/50 rounded-full px-2 py-0.5">
+                <Briefcase size={10} />
+                Portfolio: {selectedSymbols.join(', ')}
+              </span>
+            )}
+          </h2>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            {hasSelections 
+              ? `Hedge recommendations optimized for your ${selectedSymbols.length} portfolio holdings`
+              : 'Convex optimization with cost, liquidity, tracking error, and mandate constraints'}
+          </p>
         </div>
         <button className="flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-xs font-semibold text-white hover:bg-orange-500 transition-colors cursor-pointer">
           <Zap size={13} />

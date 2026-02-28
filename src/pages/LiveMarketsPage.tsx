@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { cn } from '@/utils/cn';
 import { useStockData, useStockHistory } from '@/hooks/useStockData';
 import type { StockQuote } from '@/hooks/useStockData';
-import { RefreshCw, TrendingUp, TrendingDown, Wifi, WifiOff, ArrowUpRight, ArrowDownRight, BarChart3, Activity, Settings2 } from 'lucide-react';
+import { RefreshCw, TrendingUp, TrendingDown, Wifi, WifiOff, ArrowUpRight, ArrowDownRight, BarChart3, Activity, Settings2, Briefcase } from 'lucide-react';
 import { ApiSettingsPanel } from '@/components/ApiSettingsPanel';
+import { usePortfolioContext } from '@/contexts/PortfolioContext';
 import {
   AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid,
   BarChart, Bar, Cell
@@ -101,30 +102,55 @@ function VolumeChart({ stocks }: { stocks: StockQuote[] }) {
 
 export function LiveMarketsPage() {
   const { stocks, indices, loading, error, dataSource, lastRefresh, refetch } = useStockData();
+  const { getSelectedSymbols, hasSelections } = usePortfolioContext();
   const [selectedStock, setSelectedStock] = useState<string>('NVDA');
   const [sortBy, setSortBy] = useState<'symbol' | 'changePercent' | 'volume'>('changePercent');
   const [view, setView] = useState<'markets' | 'api'>('markets');
 
-  const selected = stocks.find(s => s.symbol === selectedStock);
+  // Filter stocks based on portfolio selections
+  const displayStocks = useMemo(() => {
+    if (!hasSelections) return stocks;
+    const selectedSymbols = new Set(getSelectedSymbols());
+    return stocks.filter(s => selectedSymbols.has(s.symbol));
+  }, [stocks, hasSelections, getSelectedSymbols]);
 
-  const sortedStocks = [...stocks].sort((a, b) => {
+  // Auto-select first portfolio stock if current selection is not in portfolio
+  useEffect(() => {
+    if (hasSelections && displayStocks.length > 0 && !displayStocks.find(s => s.symbol === selectedStock)) {
+      setSelectedStock(displayStocks[0].symbol);
+    }
+  }, [hasSelections, displayStocks, selectedStock]);
+
+  const selected = displayStocks.find(s => s.symbol === selectedStock) || displayStocks[0];
+
+  const sortedStocks = [...displayStocks].sort((a, b) => {
     if (sortBy === 'symbol') return a.symbol.localeCompare(b.symbol);
     if (sortBy === 'changePercent') return Math.abs(b.changePercent) - Math.abs(a.changePercent);
     return b.volume - a.volume;
   });
 
-  const gainers = stocks.filter(s => s.changePercent > 0).sort((a, b) => b.changePercent - a.changePercent);
-  const losers = stocks.filter(s => s.changePercent < 0).sort((a, b) => a.changePercent - b.changePercent);
-  const avgChange = stocks.length > 0 ? stocks.reduce((s, x) => s + x.changePercent, 0) / stocks.length : 0;
+  const gainers = displayStocks.filter(s => s.changePercent > 0).sort((a, b) => b.changePercent - a.changePercent);
+  const losers = displayStocks.filter(s => s.changePercent < 0).sort((a, b) => a.changePercent - b.changePercent);
+  const avgChange = displayStocks.length > 0 ? displayStocks.reduce((s, x) => s + x.changePercent, 0) / displayStocks.length : 0;
 
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Live Market Data</h2>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            Live Market Data
+            {hasSelections && (
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold text-orange-400 bg-orange-950/50 border border-orange-800/50 rounded-full px-2 py-0.5">
+                <Briefcase size={10} />
+                Portfolio Filter: {displayStocks.length} stocks
+              </span>
+            )}
+          </h2>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Real-time stock quotes & market indices — auto-refreshes every 30 seconds
+            {hasSelections 
+              ? 'Showing only stocks from your Portfolio Risk selection' 
+              : 'Real-time stock quotes & market indices — auto-refreshes every 30 seconds'}
           </p>
         </div>
         <div className="flex items-center gap-3">

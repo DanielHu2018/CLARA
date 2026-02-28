@@ -3,7 +3,8 @@ import { cn } from '@/utils/cn';
 import { MonteCarloChart } from '@/components/MonteCarloChart';
 import { VaRChart } from '@/components/VaRChart';
 import { SensitivityChart } from '@/components/SensitivityChart';
-import { Settings, Info, Sparkles } from 'lucide-react';
+import { Settings, Info, Sparkles, Briefcase } from 'lucide-react';
+import { usePortfolioContext } from '@/contexts/PortfolioContext';
 import {
   AreaChart, Area, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, BarChart, Bar, Cell
 } from 'recharts';
@@ -49,6 +50,8 @@ const CONFIDENCE_LEVELS = [
 ];
 
 export function SimulationPage() {
+  const { getSelectedSymbols, hasSelections } = usePortfolioContext();
+  const selectedSymbols = hasSelections ? getSelectedSymbols() : [];
   const [selectedDistribution, setSelectedDistribution] = useState('normal');
   const [useWatsonRecommendation, setUseWatsonRecommendation] = useState(true);
   const [selectedConfidenceLevels, setSelectedConfidenceLevels] = useState([0.95, 0.99]);
@@ -66,8 +69,20 @@ export function SimulationPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Monte Carlo Simulation Engine</h2>
-          <p className="text-xs text-zinc-500 mt-0.5">100K path simulation with regime-conditioned covariance, non-linear payoff modeling, correlation stress</p>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            Monte Carlo Simulation Engine
+            {hasSelections && (
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold text-orange-400 bg-orange-950/50 border border-orange-800/50 rounded-full px-2 py-0.5">
+                <Briefcase size={10} />
+                Portfolio: {selectedSymbols.join(', ')}
+              </span>
+            )}
+          </h2>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            {hasSelections 
+              ? `Simulating risk scenarios for your ${selectedSymbols.length} portfolio holdings`
+              : '100K path simulation with regime-conditioned covariance, non-linear payoff modeling, correlation stress'}
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <button

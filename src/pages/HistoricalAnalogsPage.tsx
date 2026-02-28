@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { cn } from '@/utils/cn';
 import { historicalAnalogs } from '@/data/mockData';
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
+import { usePortfolioContext } from '@/contexts/PortfolioContext';
+import { Briefcase } from 'lucide-react';
 
 const analogDetails: Record<string, { Narrative: string; sectors: string[]; factors: { name: string; shock: number }[] }> = {
   'US-China Trade War': {
@@ -62,6 +64,8 @@ const analogDetails: Record<string, { Narrative: string; sectors: string[]; fact
 };
 
 export function HistoricalAnalogsPage() {
+  const { getSelectedSymbols, hasSelections } = usePortfolioContext();
+  const selectedSymbols = hasSelections ? getSelectedSymbols() : [];
   const [selectedAnalog, setSelectedAnalog] = useState(0);
   const selected = historicalAnalogs[selectedAnalog];
   const detail = analogDetails[selected.name];
@@ -86,8 +90,20 @@ export function HistoricalAnalogsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Historical Analog Engine</h2>
-          <p className="text-xs text-zinc-500 mt-0.5">30+ years macro event database with semantic, structural, and market sensitivity similarity scoring</p>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            Historical Analog Engine
+            {hasSelections && (
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold text-orange-400 bg-orange-950/50 border border-orange-800/50 rounded-full px-2 py-0.5">
+                <Briefcase size={10} />
+                Portfolio: {selectedSymbols.join(', ')}
+              </span>
+            )}
+          </h2>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            {hasSelections 
+              ? `Historical analogs relevant to your ${selectedSymbols.length} portfolio holdings`
+              : '30+ years macro event database with semantic, structural, and market sensitivity similarity scoring'}
+          </p>
         </div>
         <span className="text-[10px] text-zinc-500">Database: 2,847 events • Last updated: Today</span>
       </div>

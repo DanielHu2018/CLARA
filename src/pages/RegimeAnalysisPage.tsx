@@ -1,5 +1,7 @@
 import { cn } from '@/utils/cn';
 import { currentRegime, correlationData } from '@/data/mockData';
+import { usePortfolioContext } from '@/contexts/PortfolioContext';
+import { Briefcase } from 'lucide-react';
 
 interface GaugeProps {
   label: string;
@@ -52,12 +54,27 @@ const regimeTypes = [
 ];
 
 export function RegimeAnalysisPage() {
+  const { getSelectedSymbols, hasSelections } = usePortfolioContext();
+  const selectedSymbols = hasSelections ? getSelectedSymbols() : [];
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-white">Regime Detection Engine</h2>
-          <p className="text-xs text-zinc-500 mt-0.5">Multi-factor regime classification with dynamic shock multipliers and correlation adjustment</p>
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            Regime Detection Engine
+            {hasSelections && (
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold text-orange-400 bg-orange-950/50 border border-orange-800/50 rounded-full px-2 py-0.5">
+                <Briefcase size={10} />
+                Portfolio: {selectedSymbols.join(', ')}
+              </span>
+            )}
+          </h2>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            {hasSelections 
+              ? `Regime analysis focused on your ${selectedSymbols.length} portfolio holdings`
+              : 'Multi-factor regime classification with dynamic shock multipliers and correlation adjustment'}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
