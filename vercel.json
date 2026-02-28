@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "api/index.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "ALPHA_VANTAGE_API_KEY": "@alpha_vantage_api_key",
+    "TWELVEDATA_API_KEY": "@twelvedata_api_key",
+    "FINNHUB_API_KEY": "@finnhub_api_key",
+    "SENDGRID_API_KEY": "@sendgrid_api_key",
+    "WATSONX_API_KEY": "@watsonx_api_key",
+    "WATSONX_PROJECT_ID": "@watsonx_project_id",
+    "GEMINI_API_KEY": "@gemini_api_key"
+  }
+}

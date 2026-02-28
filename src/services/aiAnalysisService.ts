@@ -1,3 +1,5 @@
+import { API_BASE_URL } from '@/config/api';
+
 export interface AIAnalysisResult {
   summary: string;
   confidence: number;
@@ -9,7 +11,7 @@ export interface AIAnalysisResult {
   provider: string;
 }
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = API_BASE_URL;
 
 async function safeJson<T>(res: Response): Promise<T | null> {
   try {

@@ -70,9 +70,21 @@ app = FastAPI(
 )
 
 # ── CORS (allow the Vite frontend) ────────────────────────────────────────────
+# Allow localhost for development and Vercel/production domains
+allowed_origins = [
+    "http://localhost:5173",  # Vite dev server
+    "http://localhost:4173",  # Vite preview
+    "https://*.vercel.app",   # Vercel preview deployments
+    "https://clara-risk.vercel.app",  # Production (update with your actual domain)
+]
+
+# In development, allow all origins
+if settings.APP_ENV == "development":
+    allowed_origins.append("*")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:4173", "*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

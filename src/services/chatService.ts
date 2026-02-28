@@ -1,3 +1,5 @@
+import { API_BASE_URL } from '@/config/api';
+
 export interface ChatMessageRequest {
   message: string;
   conversation_id?: string | null;
@@ -11,7 +13,7 @@ export interface ChatMessageResponse {
   fallback_used: boolean;
 }
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = API_BASE_URL;
 
 async function safeJson<T>(res: Response): Promise<T | null> {
   try {

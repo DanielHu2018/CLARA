@@ -5,6 +5,7 @@ import {
   getAVRateStatus,
   incrementAVRequestCount,
 } from '@/services/alphaVantageService';
+import { API_BASE_URL } from '@/config/api';
 
 export interface StockQuote {
   symbol: string;

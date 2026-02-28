@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Search, FileText, TrendingUp, AlertCircle, Download, ExternalLink, Loader2 } from 'lucide-react';
 import { RiskHeatMap } from '../components/RiskHeatMap';
+import { API_BASE_URL } from '@/config/api';
 
 interface TenKRisk {
   risk_id: string;
@@ -50,7 +51,7 @@ export function TenKAnalysisPage() {
 
     try {
       const yearParam = year ? `?year=${year}` : '';
-      const response = await fetch(`http://localhost:8000/api/10k/analyze${yearParam}`, {
+      const response = await fetch(`${API_BASE_URL}/api/10k/analyze${yearParam}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticker: ticker.toUpperCase(), year: year ? parseInt(year) : null })
@@ -84,7 +85,7 @@ export function TenKAnalysisPage() {
   const fetchHeatMap = async (tickerSymbol: string, fiscalYear: number) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/10k/heat-map/${tickerSymbol}?year=${fiscalYear}`
+        `${API_BASE_URL}/api/10k/heat-map/${tickerSymbol}?year=${fiscalYear}`
       );
       
       if (response.ok) {
