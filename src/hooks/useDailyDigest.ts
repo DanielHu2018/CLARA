@@ -6,6 +6,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { liveEvents } from '@/data/mockData';
 import type { ScrapedEvent } from '@/services/webScraperService';
+import { scrapeFinancialNews } from '@/services/webScraperService';
 
 export interface DigestConfig {
   enabled: boolean;
@@ -122,15 +123,31 @@ export function useDailyDigest() {
     setScraping(true);
     setScrapeStatus('idle');
     
-    // Simulate scraping delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Convert mock events to ScrapedEvent format
-    const scraped = liveEvents.map(convertToScrapedEvent);
-    setEvents(scraped);
-    setScrapeSource('CLARA Mock Feed');
-    setScrapeStatus('done');
-    setScraping(false);
+    try {
+      // Try to scrape real news first
+      const scraped = await scrapeFinancialNews();
+      
+      if (scraped.length > 0) {
+        setEvents(scraped);
+        setScrapeSource('NewsAPI / Alpha Vantage');
+        setScrapeStatus('done');
+      } else {
+        // Fallback to mock data if scraping fails or no API keys
+        const mockScraped = liveEvents.map(convertToScrapedEvent);
+        setEvents(mockScraped);
+        setScrapeSource('CLARA Mock Feed (No API keys configured)');
+        setScrapeStatus('done');
+      }
+    } catch (error) {
+      console.error('[useDailyDigest] Scraping failed:', error);
+      // Fallback to mock data on error
+      const mockScraped = liveEvents.map(convertToScrapedEvent);
+      setEvents(mockScraped);
+      setScrapeSource('CLARA Mock Feed (Error)');
+      setScrapeStatus('error');
+    } finally {
+      setScraping(false);
+    }
   }, []);
 
   const sendDigest = useCallback(async (trigger: 'scheduled' | 'manual') => {
